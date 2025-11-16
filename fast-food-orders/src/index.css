@@ -1,0 +1,9 @@
+body, html, #root {
+    height: 100vh;
+    margin: 0;
+    overflow: hidden;
+}
+
+#root {
+    font-family: 'Ikea Sans', sans-serif;
+}
