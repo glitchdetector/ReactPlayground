@@ -9,7 +9,7 @@ const RootRedirect = () => {
   useEffect(() => {
     // Open the control window as a popup
     const popup = window.open(
-      "/fastfood/control",
+      "/ReactPlayground/fastfood/control",
       "controlWindow",
       "popup=yes,width=600,height=800,left=100,top=100"
     );
@@ -26,7 +26,7 @@ const RootRedirect = () => {
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <BrowserRouter basename="/fastfood">
+    <BrowserRouter basename="/ReactPlayground/fastfood">
       <Routes>
         <Route path="/" element={<RootRedirect />} />
         <Route path="/display" element={<FastFoodOrderDisplay />} />
