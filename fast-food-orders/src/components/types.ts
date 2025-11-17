@@ -13,10 +13,18 @@ export interface iOrder {
     kiosk: number,
     orderState: OrderState;
     items: string[];
+    createdAt?: Date;
 }
 
 export interface iDisplayOrder {
     id: number;
     kiosk: number,
     orderState: OrderState;
+}
+
+export interface iDisplayMessage {
+    command: string,
+    id?: number,
+    kiosk?: number,
+    orderState?: OrderState,
 }

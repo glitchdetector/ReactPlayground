@@ -1,10 +1,10 @@
 import type { ReactNode } from "react";
 
-interface completeOrderButtonProps{completeOrder : Function}
+interface InterfaceButtonProps{action : Function, children?: ReactNode}
 
-export const CompleteOrderButton = ({completeOrder} : completeOrderButtonProps): ReactNode => {
+export const InterfaceButton = ({action, children} : InterfaceButtonProps): ReactNode => {
     return <button 
-    onClick={() => completeOrder()}
+    onClick={() => action()}
     style={{
         backgroundColor: "rgb(255, 134, 57)",
         borderRadius: "2px",
@@ -27,5 +27,5 @@ export const CompleteOrderButton = ({completeOrder} : completeOrderButtonProps):
         textOverflow: "ellipsis",
         whiteSpace: "nowrap",      // replaces text-wrap-mode: nowrap
         width: "fit-content",
-    }}>Complete Order</button>
+    }}>{children}</button>
 }

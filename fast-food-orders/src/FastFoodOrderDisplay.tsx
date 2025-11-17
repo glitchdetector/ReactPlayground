@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { type iDisplayOrder, OrderState } from "./components/types"
+import { type iDisplayMessage, type iDisplayOrder, OrderState } from "./components/types"
 import { OrderListWrapper } from "./components/display/OrderListWrapper"
 import { OrderList } from "./components/display/OrderList"
 import { VerticalLine } from "./components/display/VerticalLine"
@@ -18,41 +18,36 @@ const randomInt = (min: number, max: number): number => {
 export const FastFoodOrderDisplay = (): React.ReactNode => {
     const [orderList, setOrderList] = useState<iDisplayOrder[]>([])
 
-    const addOrder = () => {
-        setOrderList(prev => [...prev, { id: prev.length + 1, kiosk: randomInt(14, 26), orderState: OrderState.Pending }]);
+    const addOrder = (id: number, kiosk: number, orderState: OrderState) => {
+        setOrderList(prev => [...prev, { id: id, kiosk: kiosk, orderState: orderState }]);
     }
 
-    const setNextOrderTo = (state: "Ready" | "Completed") => {
-        setOrderList(prev => {
-            const fromState = state === "Ready" ? "Pending" : "Ready";
-            const toState = state === "Ready" ? "Ready" : "Completed";
+    const setOrderAs = (id: number, state: OrderState) => {
+        setOrderList(prev => prev.map(order => {
+            if (order.id === id) {
+                return { ...order, orderState: state };
+            }
+            return order;
+        }));
+    }
 
-            let updated = false;
+    const deleteAllOrders = () => {
+        setOrderList(_ => []);
+    }
 
-            return prev.map(order => {
-                if (!updated && order.orderState === fromState) {
-                    updated = true;
-                    // return a NEW object, don't mutate the old one
-                    return { ...order, orderState: toState };
-                }
-                return order;
-            });
-        });
-    };
-
-    const onCreateOrder = () => { addOrder() }
-    const onSetOrderAsReady = () => { setNextOrderTo("Ready") }
-    const onSetOrderAsCompleted = () => { setNextOrderTo("Completed") }
+    const onCreateOrder = (message: iDisplayMessage) => { addOrder(message.id!, message.kiosk!, OrderState.Pending) }
+    const onSetOrderAs = (message: iDisplayMessage) => { setOrderAs(message.id!, message.orderState!) }
+    const onDeleteAllOrders = () => { deleteAllOrders() }
 
     const commandPallette: Record<string, Function> = {
         "ADD_ORDER": onCreateOrder,
-        "READY_ORDER": onSetOrderAsReady,
-        "COMPLETE_ORDER": onSetOrderAsCompleted,
+        "SET_ORDER_AS": onSetOrderAs,
+        "DELETE_ALL": onDeleteAllOrders,
     }
 
     useEffect(() => {
-        const handler = (event: MessageEvent<{ command: string }>) => {
-            commandPallette[event.data.command]?.();
+        const handler = (event: MessageEvent<iDisplayMessage>) => {
+            commandPallette[event.data.command]?.(event.data);
         };
 
         channel.addEventListener("message", handler);
@@ -60,7 +55,14 @@ export const FastFoodOrderDisplay = (): React.ReactNode => {
     }, []);
 
 
-    const FastFoodOrderDisplayStyle: React.CSSProperties = { display: "flex", flexDirection: "column", gap: "0.5em", margin: "0 2em 0 2em", height: "100%" };
+    const FastFoodOrderDisplayStyle: React.CSSProperties = {
+        display: "flex",
+        flexDirection: "column", 
+        gap: "0.5em", 
+        margin: "0 2em 0 2em", 
+        height: "100%",
+        overflow: "hidden",
+    };
 
 
     return <div style={FastFoodOrderDisplayStyle}>
